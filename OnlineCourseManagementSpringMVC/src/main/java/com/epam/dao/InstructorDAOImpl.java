@@ -32,9 +32,9 @@ public class InstructorDAOImpl implements InstructorDAO{
 		
 	}
 	
-	public void save(Instructor instructor)
+	public void save(InstructorDTO instructorDTO)
 	{
-		
+		 Instructor instructor=	ModelMapperService.convertDtoToInsEntity(instructorDTO);
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
 		em.persist(instructor);

@@ -89,6 +89,18 @@ class CourseControllerTest {
 		//verify(courseService,times(1)).addCourse(1, new Course());
 	}
 	
+	
+	@Test
+	void addTestSuccess() throws  Exception //due to binding
+	{
+		HashMap<String, Object> session= new HashMap<String, Object>();
+		session.put("id",1);
+		Course course=new Course("java","java",4,new ArrayList<>());
+		doNothing().when(courseService).addCourse(1, course);
+		mockMvc.perform(post("/add").sessionAttrs(session).param("courseName","java").param("courseDescription", "java").param(" courseDurationInMonths",String.valueOf(4))).andExpect(view().name("redirect:/loadCourses"));
+		verify(courseService,times(1)).addCourse(1, course);
+	}
+	
 	@Test
 	void viewTest() throws Exception
 	{

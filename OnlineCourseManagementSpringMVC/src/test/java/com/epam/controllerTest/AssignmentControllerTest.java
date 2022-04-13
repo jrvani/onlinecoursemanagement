@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.hamcrest.CoreMatchers.any;
 import static org.hamcrest.Matchers.hasSize;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,6 +23,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -75,22 +77,22 @@ class AssignmentControllerTest {
 		session.put("id",2);
 		
 		when(assignmentService.getCourses(2, "java")).thenReturn(course);
-		mockMvc.perform(post("/getCourse").param("courseName","java").sessionAttrs(session)).andExpect(view().name("redirect:/loadDetails"));
+		mockMvc.perform(post("/getCourse").param("courseName","java").sessionAttrs(session)).andExpect(view().name("redirect:/loadAssQues"));
 		assertEquals(course, assignmentService.getCourses(2,"java"));
 	
 	}
 	
 	
 
-
+	
 	@Test
-	void loadDetailsTest() throws Exception   //need to test this
+	void loadViewpage() throws Exception  //has size
 	{
-		List<AssignmentsDTO> assignmentsList=ModelMapperService.convertAssignmentList(assignments);
-		when(assignmentService.viewAssignments(course)).thenReturn(assignmentsList);
-		System.out.println(assignmentsList.size());
-		mockMvc.perform(get("/loadDetails")).andExpect(view().name("assignment")).andExpect(model().attribute("ass",hasSize(0)));
-		assertEquals(1,assignmentService.viewAssignments(course).size());
+		List<AssignmentsDTO> list=new ArrayList<>();
+		list.add(new AssignmentsDTO("java","12 09 2019", 25));
+		list.add(new AssignmentsDTO("sql","12 03 2022", 15));
+		when(assignmentService.viewAssignments(course)).thenReturn(list);
+		mockMvc.perform(get("/loadAssQues")).andExpect(model().attribute("ass",hasSize(2))).andExpect(view().name("viewAssignment"));
 	}
 	
 	@Test
@@ -102,13 +104,11 @@ class AssignmentControllerTest {
 	@Test
 	void addAssignmentTest() throws Exception  //binding result
 	{
-		HashMap<String, Object> session= new HashMap<String, Object>();
-		session.put("id",2);
 		Assignment assignment=new Assignment("java 1","34 56", 25);
 		Course course=new Course("java","all java",3,assignments);
 		when(assignmentService.addAssignments(course, assignment)).thenReturn(assignment);
-		mockMvc.perform(post("/addAssignment").param("assignmentName","java").param("deadline","12 03 2019").param("score","25").sessionAttrs(session))
-		       .andExpect(view().name("redirect:/loadDetails"));
+		mockMvc.perform(post("/addAssignment").param("assignmentName","java").param("deadline","12 03 2019").param("score","25"))
+		       .andExpect(view().name("redirect:/loadAssQues"));
 	
 	}
 	
@@ -122,64 +122,49 @@ class AssignmentControllerTest {
                 .andExpect(view().name("addAssignment"));
 	}
 	
+	
+	
 	@Test
-	void viewAssigment() throws Exception
+	void loadAddQuestions() throws Exception
 	{
-		AssignmentsDTO ass=new AssignmentsDTO("cns","12 03 2019",25);
-		when(assignmentService.view(2)).thenReturn(ass);
-		mockMvc.perform(get("/viewAssignment").param("aid", "2")).andExpect(view().name("redirect:/loadAssQues"));
-		assertEquals("cns",assignmentService.view(2).getAssignmentName());
+		String aid="1";
+		assignment=new Assignment("java 1","12 09 2022", 25);
+		assignment.setAssignmentId(1);
+		when(assignmentService.find(1)).thenReturn(assignment);
+		mockMvc.perform(get("/loadaddQuestion").param("aid", aid)).andExpect(view().name("addQuestion"));
 	}
-	
+
 	
 	@Test
-	void loadQuestion() throws Exception  //test
-	{
-		Assignment assignment=new Assignment("java 1","34 56", 25);
-		List<Question> question=new ArrayList<>();
+	void addQuestion() throws Exception //due to binding no mocking sol:override
+	{ 
 		Question q=new Question();
 		q.setQuestionName("what is java");
-		q.setQuestionId(1);
-		question.add(q);
-		when(questionService.view(assignment)).thenReturn(question);
-		mockMvc.perform(get("/loadAssQues")).andExpect(view().name("viewAssignment")).andExpect(model().attribute("question",hasSize(0)));
-		assertEquals(1, questionService.view(assignment).size());
-	}
-	
-	
-	@Test
-	public void addQuestion() throws Exception  // binding test
-	{
-		Assignment assignment=new Assignment("java 1","34 56", 25);
-		QuestionDTO questionDto=new QuestionDTO("what is java");
-		Question q=new Question();
-		q.setQuestionName("what is java");
-		q.setQuestionId(1);
 		doNothing().when(questionService).add(assignment, q);
 		mockMvc.perform(post("/addQuestion").sessionAttr("questionDto", QuestionDTO.class)).andExpect(view().name("redirect:/loadAssQues"));
 		//verify(questionService,times(1)).add(assignment, q);
-		
 	}
+
+	
+	
+	
+
 	
 	@Test
-	public void deleteAssignment() throws Exception
+	public void deleteAssignment() throws Exception  //due to course it was throwing argument mismatch but override equlas and hashcode in course
 	{
-		String assname="java";
-		doNothing().when(assignmentService).deleteAssignments(course,"java");
-		mockMvc.perform(get("/deleteAssignment").param("assname","java")).andExpect(view().name("redirect:/loadDetails"));
-		verify(assignmentService,times(1)).deleteAssignments(course,"java");
+		String cname="java";
+		doNothing().when(assignmentService).deleteAssignments(course,cname);
+		mockMvc.perform(get("/deleteAssignment").param("assname",cname)).andExpect(view().name("redirect:/loadAssQues"));
+		verify(assignmentService,times(1)).deleteAssignments(course,cname);
 	}
 	
 	@Test
 	public void deleteQuestion() throws Exception
 	{
-		
-		Assignment assignment=new Assignment("cns","12 03 2019",25);
-		assignment.setQuestions(new ArrayList<>());
-		doNothing().when(questionService).deleteQuestion(assignment,1 );
-		System.out.println("lllll"+assignment);
-		mockMvc.perform(get("/deleteQuestion").param("ass","1")).andExpect(view().name("redirect:/loadAssQues"));
-		verify(questionService,times(1)).deleteQuestion(assignment,1 );
+		doNothing().when(questionService).deleteQuestion(1 );
+		mockMvc.perform(get("/deleteQuestion").param("qid","1")).andExpect(view().name("redirect:/loadAssQues"));
+		verify(questionService,times(1)).deleteQuestion(1 );
 		
 		
 	}

@@ -53,6 +53,16 @@ class Login {
 	}
 	
 	@Test
+	void loginFailedTest() throws Exception
+	{
+		String username="vni";
+		String password="vani";
+		when(validation.verifyUser("vni","vani")).thenReturn(0);
+		mockMvc.perform(post("/login").param("username",username).param("password",password)).andExpect(view().name("error"));
+		verify(validation,times(1)).verifyUser("vni", "vani");
+	}
+	
+	@Test
 	void logoutTest() throws Exception 
 	{
 		mockMvc.perform(get("/logout")).andExpect(view().name("login"));

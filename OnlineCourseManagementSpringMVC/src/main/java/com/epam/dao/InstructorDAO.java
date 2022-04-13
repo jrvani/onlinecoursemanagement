@@ -8,6 +8,6 @@ import com.epam.entity.Instructor;
 public interface InstructorDAO {
 	
 	public List<Instructor> getAllInstructor();
-	public void save(Instructor instructor);
+	public void save(InstructorDTO instructorDTO);
 
 }

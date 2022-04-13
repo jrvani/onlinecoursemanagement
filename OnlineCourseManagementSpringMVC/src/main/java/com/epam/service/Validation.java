@@ -33,15 +33,14 @@ public class Validation {
 			 throw new ListNotFound("list is empty no data");
 		 }
 		 return list;
-	}
-	public boolean register(InstructorDTO instructorDto) throws ListNotFound
+	}public boolean register(InstructorDTO instructorDTO) throws ListNotFound
 	{
 		boolean flag=true;
 	
 		 List<Instructor> list=getInstructors();
         for(Instructor i:list)
         {
-        	if(i.getName().equals(instructorDto.getName()) && i.getUsername().equals(instructorDto.getUsername()))
+        	if(i.getName().equals(instructorDTO.getName()) && i.getUsername().equals(instructorDTO.getUsername()))
         	{
         		
         		flag=false;
@@ -49,9 +48,10 @@ public class Validation {
         	}
         }
         
-        Instructor instructor=	ModelMapperService.convertDtoToInsEntity(instructorDto);
+       
         if(flag) {
-        	instructorDaoInterface.save(instructor);
+        	 Instructor instructor=	ModelMapperService.convertDtoToInsEntity(instructorDTO);
+        	instructorDaoInterface.save(instructorDTO);
 
         
         }

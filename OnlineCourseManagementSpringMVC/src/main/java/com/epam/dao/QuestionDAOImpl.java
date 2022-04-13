@@ -37,15 +37,13 @@ public class QuestionDAOImpl implements QuestionDAO {
 		
 	}
 	
-	public void delete(Assignment ass,int id)
+	public void delete(int id)
 	{
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
-        Query query=em.createQuery("delete from Question where question_id=:id and assignment_assignment_id=:assid");
+        Query query=em.createQuery("delete from Question where question_id=:id");
         query.setParameter("id", id);
-        query.setParameter("assid", ass.getAssignmentId());
-		
-	
+        
 		query.executeUpdate();
 		em.getTransaction().commit();
 		em.close();

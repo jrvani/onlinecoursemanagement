@@ -29,7 +29,7 @@ public class CourseService {
 
 	public void addCourse(int id,Course course) throws CourseNotExists {
 		
-		if (course.getCourseName().isEmpty()) {
+		if (course.getCourseName().isBlank()) {
 			throw new CourseNotExists("course not exists");
 		}
 		

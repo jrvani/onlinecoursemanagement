@@ -38,9 +38,9 @@ public class QuestionService {
 		
 	}
 	
-	public void deleteQuestion(Assignment ass,int id)
+	public void deleteQuestion(int id)
 	{
-		questionDAOInterface.delete(ass,id);
+		questionDAOInterface.delete(id);
 		
 	}
 

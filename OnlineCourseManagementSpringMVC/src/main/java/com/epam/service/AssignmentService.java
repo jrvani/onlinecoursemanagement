@@ -39,10 +39,10 @@ public class AssignmentService {
 		
 		return assignmentDAOInterface.add(assignment);
 	}
-	public AssignmentsDTO view(int aid)
+	public Assignment find(int aid)
 	{
 		Assignment a=assignmentDAOInterface.find(aid);
-		return ModelMapperService.convertAssEntityToDTO(a);
+		return a;
 	}
    
 	public List<AssignmentsDTO> viewAssignments(Course c) {

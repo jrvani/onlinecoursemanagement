@@ -1,6 +1,7 @@
 package com.epam.entity;
 
 import java.util.List;
+import java.util.Objects;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -17,6 +18,24 @@ import javax.persistence.Table;
 @Table(name="course")
 public class Course {
 	
+	@Override
+	public int hashCode() {
+		return Objects.hash(courseDescription, courseDurationInMonths, courseName);
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Course other = (Course) obj;
+		return Objects.equals(courseDescription, other.courseDescription)
+				&& courseDurationInMonths == other.courseDurationInMonths
+				&& Objects.equals(courseName, other.courseName);
+	}
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name="cid")
@@ -123,6 +142,8 @@ public class Course {
 	public String toString() {
 		return courseId+"Course Name : "+courseName +"\n" +"Course Description : "+ courseDescription + "\n" +"Course Duration In Months : "+ courseDurationInMonths + "\n"+"Assignments : "+assignments+"\n";
 	}
+	
+	
 
 	
 

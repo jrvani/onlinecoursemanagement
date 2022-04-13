@@ -56,12 +56,13 @@ public class CourseContoller {
 	@PostMapping(value="/add")
 	public String addCourse(@Valid @ModelAttribute("courseDTO") CourseDTO courseDTO,BindingResult result,HttpSession session) throws CourseNotExists
 	{
-		 id =(int)session.getAttribute("id");
+		id =(int)session.getAttribute("id");
 		if(result.hasErrors()) { return "addCourse";}   //addCourse.jsp
 		else {
 		Course course=ModelMapperService.convertDtoToCourseEntity(courseDTO);
 		
 		courseService.addCourse(id,course);
+		
 		}
 		return "redirect:/loadCourses";
 	}

@@ -45,32 +45,30 @@ class RegistrationTest {
 	}
 	
 	@Test
-	void registrationTrueTest() throws Exception
+	void registrationTrueTest() throws Exception  //initially got error as the data was not being mocked need to implemet equals and hascode in instructorDTO
 	{
-		InstructorDTO instructorDTO=mock(InstructorDTO.class);
-		when(bindingResult.hasErrors()).thenReturn(true);
-		mockMvc.perform(post("/register").sessionAttr("instructorDto", instructorDTO)).andExpect(view().name("registration"));
+		InstructorDTO instructorDTO=new InstructorDTO("vani", "vani16", "vani",new ArrayList<>());
+		
+		when(validation.register(instructorDTO)).thenReturn(true);
+		mockMvc.perform(post("/register").param("name","vani").param("username","vani16").param("password","vani"))
+		.andExpect(view().name("login"));
+		assertEquals(true, validation.register(instructorDTO));
 	}
 	
 	@Test
 	void registrationTest() throws Exception
 	{
-		List<CourseDTO> list=new ArrayList<>();
-		InstructorDTO instructorDTO=new InstructorDTO("vani","vani","vani",list);
-		when(validation.register(instructorDTO)).thenReturn(true); 
-		//when(bindingResult.hasErrors()).thenReturn(false);
-		mockMvc.perform(post("/register").sessionAttr("instructorDto", instructorDTO)).andExpect(view().name("registration"));
+		
+		mockMvc.perform(post("/register").sessionAttr("instructorDto", InstructorDTO.class)).andExpect(view().name("registration"));
 	}
 	
 	@Test
 	void registrationFalseTest() throws Exception
 	{
-		List<CourseDTO> list=new ArrayList<>();
-		BindingResult result = mock(BindingResult.class);
-		InstructorDTO instructor=mock(InstructorDTO.class);
-		when(validation.register(instructor)).thenReturn(false);  //need to add behavoiur
-		mockMvc.perform(post("/register").sessionAttr("instructor", instructor)).andExpect(view().name("registration"));
-		assertEquals(false,validation.register(instructor));
+		InstructorDTO instructorDTO=new InstructorDTO("vani", "vani16", "vani",new ArrayList<>());
+		when(validation.register(instructorDTO)).thenReturn(false);  //need to add behavoiur
+		mockMvc.perform(post("/register").param("name","vani").param("username","vani16").param("password","vani")).andExpect(view().name("registration"));
+		assertEquals(false,validation.register(instructorDTO));
 	}
 
 }

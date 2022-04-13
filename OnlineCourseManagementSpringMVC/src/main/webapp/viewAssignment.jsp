@@ -19,7 +19,7 @@ ASSIGNEMNTS
 <th>score</th>
 <th>Questions</th>
 </tr>
-
+<core:forEach items="${ass}" var="ass" >
 <tr>
 <td>${ass.assignmentId}</td>
 <td>${ass.assignmentName}</td>
@@ -28,20 +28,21 @@ ASSIGNEMNTS
 
 <td>
 <table border="1">
-<core:forEach items="${question }" var="question">
+<core:forEach items="${ass.questions }" var="question">
 <tr>
 <td>${question.questionId }</td>
 <td>${question.questionName }</td>
-<td><input type="button" onClick="location.href='/deleteQuestion?ass=${question.questionId}'" value="Delete">
+<td><input type="button" onClick="location.href='/deleteQuestion?qid=${question.questionId}'" value="Delete">
 </tr>
 </core:forEach>
 </table>
 </td>
 
 
-<td><input type="button" onClick="location.href='addQuestion.jsp'" value="add Question">
+<td><input type="button" onClick="location.href='loadaddQuestion?aid=${ass.assignmentId}'" value="add Question">
 <input type="button" onClick="location.href='/deleteAssignment?assname=${ass.assignmentName}'" value="delete"/>
 </tr>
+</core:forEach>
 </table>
 <input type="button" onClick="location.href='/loadAddAssignment'" value="Add Assignment">
 

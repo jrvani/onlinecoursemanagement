@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -40,7 +41,6 @@ public class AssignmentController {
 	
 	Course course;
 	Assignment assignment;
-	AssignmentsDTO ass;
 	int id;
 	@GetMapping("/loadAssignment")
 	public ModelAndView loadForm()
@@ -56,17 +56,18 @@ public class AssignmentController {
 	{
 		id =(int)session.getAttribute("id");
 		course=assignmentService.getCourses(id, courseName);
-		return "redirect:/loadDetails";
+		return "redirect:/loadAssQues";
 	}
 	
-	@RequestMapping("/loadDetails")
-	public ModelAndView loadAss()
+
+	
+	@RequestMapping(value="/loadAssQues",method=RequestMethod.GET)
+	public ModelAndView load()
 	{
-		 
 		ModelAndView modelAndView=new ModelAndView();
-		List<AssignmentsDTO> list=assignmentService.viewAssignments(course); //dependent on upper methods
-		modelAndView.addObject("ass",list );
-		modelAndView.setViewName("assignment");
+		List<AssignmentsDTO> list=assignmentService.viewAssignments(course); 
+		modelAndView.addObject("ass",list);
+		modelAndView.setViewName("viewAssignment");
 		return modelAndView;
 	}
 	
@@ -75,53 +76,34 @@ public class AssignmentController {
 	{
 		ModelAndView modelAndView=new ModelAndView();
 		modelAndView.addObject("assignmentsDTO", new AssignmentsDTO());
+		
 		modelAndView.setViewName("addAssignment");
 		return modelAndView;
 	}
 	
 	@PostMapping("/addAssignment")
-	public String addAssignment(@Valid @ModelAttribute("assignmentsDTO") AssignmentsDTO assignmentsDTO,BindingResult result,HttpSession session) 
+	public String addAssignment(@Valid @ModelAttribute("assignmentsDTO") AssignmentsDTO assignmentsDTO,BindingResult result) 
 	{
-		Assignment assignment=ModelMapperService.convertDtoToAssignmentEntity(assignmentsDTO);
+		assignment=ModelMapperService.convertDtoToAssignmentEntity(assignmentsDTO);
 		if(result.hasErrors()) {
 			return "addAssignment";
 		}
 	    assignmentService.addAssignments(course, assignment);
-		return "redirect:/loadDetails";
-	}
-	
-	
-	@RequestMapping(value="/viewAssignment")
-	public String viewAssignment(@RequestParam("aid") String aid)
-	{
-		
-		int aid1=Integer.parseInt(aid);
-		 ass=assignmentService.view(aid1);
-		
-		assignment=ModelMapperService.convertDtoToAssignmentEntity(ass);
-		
 		return "redirect:/loadAssQues";
-		
 	}
 	
-	@RequestMapping("/loadAssQues")
-	public ModelAndView load()
+	@GetMapping("/loadaddQuestion")
+	public String loadQuestions(@RequestParam("aid") String aid)
 	{
-        List<Question> question=questionService.view(assignment);
-        ModelAndView modelAndView=new ModelAndView();
-		modelAndView.addObject("ass",ass);
-		modelAndView.addObject("question", question);
-		modelAndView.setViewName("viewAssignment");
-		return modelAndView;
+		int id=Integer.parseInt(aid);
+		assignment=assignmentService.find(id);
+		return "addQuestion";
 	}
 	
 	@PostMapping("/addQuestion")
 	public String addQuestion(@ModelAttribute QuestionDTO questionDto) 
 	{
-		ModelAndView modelAndView=new ModelAndView();
 		Question question=ModelMapperService.convertDtoToQuestionEntity(questionDto);
-		//String aid=""+assignment.getAssignmentId();
-		//modelAndView.addObject("ass",aid);
 		questionService.add(assignment, question);
 		return "redirect:/loadAssQues";
 	}
@@ -133,14 +115,15 @@ public class AssignmentController {
 	public String deleteAssignment(@RequestParam("assname") String assname)
 	{
 		assignmentService.deleteAssignments(course,assname);
-		return "redirect:/loadDetails";
+		return "redirect:/loadAssQues";
 	}
 	
 	@RequestMapping(value="/deleteQuestion")
-	public String deleteQuestion(@RequestParam("ass") String ass)
+	public String deleteQuestion(@RequestParam("qid") String qid)
 	{
-		int id=Integer.parseInt(ass);
-		questionService.deleteQuestion(assignment, id);
+		int id=Integer.parseInt(qid);
+		System.out.println(id);
+		questionService.deleteQuestion(id);
 		return "redirect:/loadAssQues";
 	}
 	
