@@ -1,0 +1,16 @@
+my first project 
+online course management
+first day a little confused bat dto and dao
+did analysis
+second day saw a peers code got inspired
+thirsd day worked on it fully,developed first 
+1.app with login,instructorui,course Service,database,instructorDTO
+2.separated login,registartion,courseDB,Assignmentservice,assignmentdto,adding courseui
+3.validation,instructorDao
+
+review happened on 7/3/2022 was v=nervous when my name was called
+but pavan sir gave a complemnet that the ui was very good appreciated me for efforts and 
+background work done.
+
+14/mar/22 implemented logger+junits for services with 100% coverage
+15/mar/2022 jdbc
